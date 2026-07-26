@@ -1,0 +1,97 @@
+services:
+  frontend:
+    image: humairo/frontend:${IMAGE_VERSION:-latest}
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - RUN_MODE=${RUN_MODE:-dev}
+    depends_on:
+      - backend
+    environment:
+      - VITE_API_URL=${VITE_API_URL:-http://localhost:${BACKEND_PORT:-3001}}
+      # File watching over a bind mount on Windows needs polling
+      - CHOKIDAR_USEPOLLING=true
+    volumes:
+      - /app/node_modules
+      - ./frontend:/app
+    ports:
+      - ${FRONTEND_PORT:-5173}:5173
+    tty: true
+    restart: on-failure:3
+    networks:
+      - app-network
+
+  backend:
+    image: humairo/backend:${IMAGE_VERSION:-latest}
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        - RUN_MODE=${RUN_MODE:-dev}
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - PORT=${PORT:-3001}
+      - NODE_ENV=${NODE_ENV:-development}
+      # File watching over a bind mount on Windows needs polling (tsx watch)
+      - CHOKIDAR_USEPOLLING=true
+      - DATABASE_URL=${DATABASE_URL}
+      - CLERK_PUBLISHABLE_KEY=${CLERK_PUBLISHABLE_KEY:-}
+      - CLERK_SECRET_KEY=${CLERK_SECRET_KEY:-}
+      - SENTRY_DSN=${SENTRY_DSN:-}
+      - STREAM_API_KEY=${STREAM_API_KEY:-}
+      - STREAM_API_SECRET=${STREAM_API_SECRET:-}
+      - IMAGEKIT_PUBLIC_KEY=${IMAGEKIT_PUBLIC_KEY:-}
+      - IMAGEKIT_PRIVATE_KEY=${IMAGEKIT_PRIVATE_KEY:-}
+      - IMAGEKIT_URL_ENDPOINT=${IMAGEKIT_URL_ENDPOINT:-}
+    volumes:
+      - /app/node_modules
+      - ./backend:/app
+    ports:
+      - ${BACKEND_PORT:-3001}:3001
+    tty: true
+    restart: on-failure:3
+    networks:
+      - app-network
+
+  db:
+    image: postgres:16
+    ports:
+      - ${DB_PORT:-5432}:5432
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-humairo}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-humairo}
+      - POSTGRES_DB=${POSTGRES_DB:-humairo_db}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-humairo} -d ${POSTGRES_DB:-humairo_db}",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: on-failure:3
+    networks:
+      - app-network
+
+  adminer:
+    image: adminer
+    ports:
+      - ${ADMINER_PORT:-8080}:8080
+    depends_on:
+      - db
+    restart: on-failure:3
+    networks:
+      - app-network
+
+volumes:
+  db-data:
+
+networks:
+  app-network:
+    driver: bridge
