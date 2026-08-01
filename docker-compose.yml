@@ -10,7 +10,9 @@ services:
       - backend
     environment:
       - VITE_API_URL=${VITE_API_URL:-http://localhost:${BACKEND_PORT:-3001}}
-      # File watching over a bind mount on Windows needs polling
+      - VITE_CLERK_PUBLISHABLE_KEY=${VITE_CLERK_PUBLISHABLE_KEY:-}
+      - VITE_CLERK_WEBHOOK_SECRET=${VITE_CLERK_WEBHOOK_SECRET:-}
+        # File watching over a bind mount on Windows needs polling
       - CHOKIDAR_USEPOLLING=true
     volumes:
       - /app/node_modules
@@ -46,6 +48,11 @@ services:
       - IMAGEKIT_PUBLIC_KEY=${IMAGEKIT_PUBLIC_KEY:-}
       - IMAGEKIT_PRIVATE_KEY=${IMAGEKIT_PRIVATE_KEY:-}
       - IMAGEKIT_URL_ENDPOINT=${IMAGEKIT_URL_ENDPOINT:-}
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:${FRONTEND_PORT:-5173}}
+      - POLOR_ACCESS_TOKEN=${POLOR_ACCESS_TOKEN:-}
+      - POLOR_WEBHOOK_SECRET=${POLOR_WEBHOOK_SECRET:-}
+      - POLOR_API_BASE=${POLOR_API_BASE:-https://sandbox-api.polor.ai/v1}
+      - POLOR_CHECKOUT_PRODUCT_ID=${POLOR_CHECKOUT_PRODUCT_ID:-}
     volumes:
       - /app/node_modules
       - ./backend:/app
