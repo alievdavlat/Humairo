@@ -16,7 +16,7 @@ export async function clerkWebhookHandler(req: Request, res: Response) {
 
     const payload =
       req.body instanceof Buffer
-        ? req.body().toString("utf8")
+        ? req.body.toString("utf8")
         : String(req.body);
     const request = new Request("https://internal/webhooks/clerk", {
       method: "POST",

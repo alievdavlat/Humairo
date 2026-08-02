@@ -1,0 +1,46 @@
+databases:
+  - name: humairo-db
+    databaseName: humairo_db
+    user: humairo
+    plan: free           
+
+services:
+  # ---- Backend (Node / Express API) ----
+  - type: web
+    name: humairo-backend
+    runtime: node
+    rootDir: backend
+    plan: free
+    buildCommand: npm install --include=dev && npm run build && npm run db:push
+    startCommand: npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: humairo-db
+          property: connectionString
+      - { key: CLERK_API_KEY,         sync: false }
+      - { key: CLERK_SECRET_KEY,      sync: false }
+      - { key: STREAMING_API_KEY,     sync: false }
+      - { key: IMAGEKIT_PUBLIC_KEY,   sync: false }
+      - { key: IMAGEKIT_PRIVATE_KEY,  sync: false }
+      - { key: IMAGEKIT_URL_ENDPOINT, sync: false }
+      - { key: FRONTEND_URL,          sync: false }  
+      - { key: CLERK_WEBHOOK_SECRET,  sync: false }
+      - { key: SENTRY_DSN,            sync: false }
+
+  # ---- Frontend (Vite + React SPA, static site) ----
+  - type: web
+    name: humairo-frontend
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm install --include=dev && npm run build
+    staticPublishPath: dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html       
+    envVars:
+      - { key: VITE_API_URL,               sync: false }  
+      - { key: VITE_CLERK_PUBLISHABLE_KEY, sync: false }

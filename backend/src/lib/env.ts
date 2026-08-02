@@ -4,7 +4,7 @@ const envSchema = z.object({
   NODE_ENV: z
     .enum(["development", "production", "test"])
     .default("development"),
-  PORT: z.number().default(3001),
+  PORT: z.coerce.number().default(3001),
   DATABASE_URL: z.string().min(1),
 
   CLERK_API_KEY: z.string().min(1),
@@ -28,7 +28,7 @@ const envSchema = z.object({
 
 export type Env = z.infer<typeof envSchema>;
 export function loadEnv(): Env {
-  const result = envSchema.SafeParse(process.env);
+  const result = envSchema.safeParse(process.env);
   if (!result.success) {
     console.error("Invalid environment variables:", result.error.flatten().fieldErrors);
     throw new Error(`Invalid environment variables`);
