@@ -1,11 +1,22 @@
+# Render Blueprint — Humairo
+# Stacklarga bo'lingan (docker-compose kabi): DB / Backend / Frontend.
+# Sirlar `sync: false` bilan belgilangan — qiymatlari Render dashboard'da kiritiladi.
+
+# ==== Postgres (docker-compose'dagi `db` xizmati o'rniga) ====
+# docker-compose: POSTGRES_USER / POSTGRES_PASSWORD / POSTGRES_DB
+#   -> Render'da bular DB blokida boshqariladi:
+#      POSTGRES_USER    = user
+#      POSTGRES_DB      = databaseName
+#      POSTGRES_PASSWORD -> Render avtomatik generatsiya qiladi (blueprintda plaintext yozilmaydi)
+#   DATABASE_URL backend'ga avtomatik ulanadi (fromDatabase).
 databases:
   - name: humairo-db
     databaseName: humairo_db
     user: humairo
-    plan: free           
+    plan: free            # tekin, 30 kundan keyin o'chadi -> keyin basic-256mb
 
 services:
-  # ---- Backend (Node / Express API) ----
+  # ======================= Backend (Node / Express) =======================
   - type: web
     name: humairo-backend
     runtime: node
@@ -14,24 +25,42 @@ services:
     buildCommand: npm install --include=dev && npm run build && npm run db:push
     startCommand: npm run start
     envVars:
+      # ---- Core ----
+      # PORT -> Render avtomatik beradi (qo'lda yozilmaydi)
       - key: NODE_ENV
         value: production
       - key: DATABASE_URL
         fromDatabase:
           name: humairo-db
           property: connectionString
+
+      # ---- Clerk ----
       - { key: CLERK_PUBLISHABLE_KEY, sync: false }
       - { key: CLERK_SECRET_KEY,      sync: false }
+      - { key: CLERK_WEBHOOK_SECRET,  sync: false }   # webhook uchun (ixtiyoriy)
+
+      # ---- Sentry ----
+      - { key: SENTRY_DSN,            sync: false }
+
+      # ---- Stream ----
       - { key: STREAM_API_KEY,        sync: false }
       - { key: STREAM_API_SECRET,     sync: false }
+
+      # ---- ImageKit ----
       - { key: IMAGEKIT_PUBLIC_KEY,   sync: false }
       - { key: IMAGEKIT_PRIVATE_KEY,  sync: false }
       - { key: IMAGEKIT_URL_ENDPOINT, sync: false }
-      - { key: FRONTEND_URL,          sync: false }  
-      - { key: CLERK_WEBHOOK_SECRET,  sync: false }
-      - { key: SENTRY_DSN,            sync: false }
 
-  # ---- Frontend (Vite + React SPA, static site) ----
+      # ---- App ----
+      - { key: FRONTEND_URL,          sync: false }   # frontend URL — 1-deploydan keyin to'ldiring
+
+      # ---- Polor ----
+      - { key: POLOR_ACCESS_TOKEN,      sync: false }
+      - { key: POLOR_WEBHOOK_SECRET,    sync: false }
+      - { key: POLOR_API_BASE,          sync: false }   # masalan https://api.polor.ai/v1
+      - { key: POLOR_CHECKOUT_PRODUCT_ID, sync: false }
+
+  # ======================= Frontend (Vite + React SPA) =======================
   - type: web
     name: humairo-frontend
     runtime: static
@@ -41,7 +70,9 @@ services:
     routes:
       - type: rewrite
         source: /*
-        destination: /index.html       
+        destination: /index.html        # SPA: barcha yo'llar index.html'ga
     envVars:
-      - { key: VITE_API_URL,               sync: false }  
+      # VITE_* build paytida "pishiriladi" -> o'zgartirsangiz qayta deploy kerak.
+      # (docker-compose'dagi CHOKIDAR_USEPOLLING faqat dev uchun — bu yerda kerak emas)
+      - { key: VITE_API_URL,               sync: false }   # backend URL — 1-deploydan keyin to'ldiring
       - { key: VITE_CLERK_PUBLISHABLE_KEY, sync: false }
