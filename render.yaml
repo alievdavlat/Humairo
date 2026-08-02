@@ -20,9 +20,10 @@ services:
         fromDatabase:
           name: humairo-db
           property: connectionString
-      - { key: CLERK_API_KEY,         sync: false }
+      - { key: CLERK_PUBLISHABLE_KEY, sync: false }
       - { key: CLERK_SECRET_KEY,      sync: false }
-      - { key: STREAMING_API_KEY,     sync: false }
+      - { key: STREAM_API_KEY,        sync: false }
+      - { key: STREAM_API_SECRET,     sync: false }
       - { key: IMAGEKIT_PUBLIC_KEY,   sync: false }
       - { key: IMAGEKIT_PRIVATE_KEY,  sync: false }
       - { key: IMAGEKIT_URL_ENDPOINT, sync: false }
