@@ -11,6 +11,11 @@ const envSchema = z.object({
   CLERK_SECRET_KEY: z.string().min(1),
   CLERK_WEBHOOK_SECRET: z.string().optional(),
 
+  JWT_SECRET: z.string().min(1),
+  JWT_REFRESH_SECRET: z.string().min(1),
+  JWT_ACCESS_EXPIRES_IN: z.string().default("15m"),
+  JWT_REFRESH_EXPIRES_IN: z.string().default("7d"),
+
   FRONTEND_URL: z.string().url().default("http://localhost:5173"),
 
   POLOR_ACCESS_TOKEN: z.string().optional(),
