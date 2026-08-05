@@ -97,3 +97,10 @@ export class InternalServerError extends AppError {
     });
   }
 }
+
+/** 503 — service unavailable */
+export class ServiceUnavailableError extends AppError {
+  constructor(message = "Service unavailable", options?: AppErrorOptions) {
+    super(message, 503, { code: "SERVICE_UNAVAILABLE", ...options });
+  }
+}
