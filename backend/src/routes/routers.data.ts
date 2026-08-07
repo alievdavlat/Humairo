@@ -2,6 +2,7 @@ import type { Router } from "express";
 import usersRouter from "./users.routes";
 import productsRouter from "./products.routes";
 import streamRouter from "./stream.routes";
+import checkoutRouter from "./checkout.routes";
 interface RouteItem {
   path: string;
   handler: Router;
@@ -19,5 +20,9 @@ export const routesData: RouteItem[] = [
   {
     path: "/stream",
     handler: streamRouter,
+  },
+  {
+    path: "/checkout",
+    handler: checkoutRouter,
   },
 ];

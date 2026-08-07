@@ -2,7 +2,7 @@ import "dotenv/config";
 import express, { Application, Request, Response } from "express";
 import { clerkMiddleware } from "@clerk/express";
 import cors from "cors";
-import { clerkWebhookHandler } from "./webhooks/clerk";
+import { clerkWebhookHandler } from "./webhooks";
 import { getEnv, loadPublic } from "./lib";
 import healthCheck from "./lib/cron";
 import routes from "./routes/routes";
@@ -18,6 +18,9 @@ app.post("/webhook/clerk", rawJson, (req: Request, res: Response) => {
   void clerkWebhookHandler(req, res);
 });
 
+// app.post("/webhook/clerk", rawJson, (req: Request, res: Response) => {
+//   void polorWebhookHandler(req, res);
+// });
 app.use(express.json());
 loadPublic(app);
 app.get("/health", (_req: Request, res: Response) => {

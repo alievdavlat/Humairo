@@ -6,7 +6,7 @@ const job = new CronJob("*/14 * * * *", () => {
   const base = process.env.FRONTEND_URL || "http://localhost:5173";
   if (!base) return;
   const url = new URL("/health", base).href;
-  const client = url.startsWith("https:") ? "https" : "http";
+  const client = url.startsWith("https:") ? https : http;
 
   client
     .get(url, (res) => {

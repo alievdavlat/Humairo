@@ -1,7 +1,7 @@
 import { clerkClient } from "@clerk/express";
 import { getStreamChatServer, StreamChatDisplayname, streamUserId } from "../lib/stream";
 import { Env } from "../lib";
-import { localUser } from "../types/user.types";
+import { localUser } from "../@types/user.types";
 
 
 export const streamService = {

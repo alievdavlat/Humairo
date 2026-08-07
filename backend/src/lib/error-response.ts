@@ -98,6 +98,12 @@ export class InternalServerError extends AppError {
   }
 }
 
+/** 502 - bad gate away error */
+export class BadGatewayError extends AppError {
+  constructor(message = "Service unavailable", options?: AppErrorOptions) {
+    super(message, 503, { code: "BAD_GATEAWAY", ...options });
+  }
+}
 /** 503 — service unavailable */
 export class ServiceUnavailableError extends AppError {
   constructor(message = "Service unavailable", options?: AppErrorOptions) {

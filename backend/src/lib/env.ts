@@ -21,7 +21,7 @@ const envSchema = z.object({
   POLOR_ACCESS_TOKEN: z.string().optional(),
   POLOR_WEBHOOK_SECRET: z.string().optional(),
   POLOR_API_BASE: z.string().url().default("https://api.polor.ai/v1"),
-  POLOR_CHECKOUT_PRODUCT_ID: z.string().optional(),
+  POLOR_CHECKOUT_PRODUCT_ID: z.string().uuid(),
 
   STREAM_API_KEY: z.string().min(1),
   STREAM_API_SECRET: z.string().min(1),
