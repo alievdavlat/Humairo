@@ -6,6 +6,7 @@ interface ErrorResponse {
   message: string;
   code?: string;
   details?: unknown;
+  sentryId?: string;
 }
 
 // 404 for any requests
@@ -14,7 +15,12 @@ export const notFound = (req: Request, _res: Response, next: NextFunction) => {
 };
 
 // Global error handler
-export const errorHandler = (err: unknown, _req: Request, res: Response, next: NextFunction) => {
+export const errorHandler = (
+  err: unknown,
+  _req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   if (res.headersSent) return next(err);
   const error = toAppError(err);
 
@@ -30,5 +36,6 @@ export const errorHandler = (err: unknown, _req: Request, res: Response, next: N
   const body: ErrorResponse = { success: false, message };
   if (error.code) body.code = error.code;
   if (error.details) body.details = error.details;
+  if (res.sentry) body.sentryId = res.sentry;
   return res.status(error.statusCode).json(body);
 };

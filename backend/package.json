@@ -3,13 +3,15 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
+    "dev": "tsx watch --import ./src/instrument.ts src/index.ts",
     "build": "tsc",
-    "start": "node dist/index.js",
+    "start": "node --import ./src/instrument.ts dist/index.js",
     "migration:generate": "drizzle-kit generate",
     "migration:push": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
-    "db:seed": "tsx scripts/seed.ts"
+    "db:seed": "tsx scripts/seed.ts",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "keywords": [],
   "author": "",
@@ -37,6 +39,7 @@
     "@types/node": "^22.10.10",
     "@types/pg": "^8.20.0",
     "drizzle-kit": "^0.31.10",
+    "prettier": "^3.9.10",
     "tsx": "^4.19.2",
     "typescript": "^5.7.3"
   }
