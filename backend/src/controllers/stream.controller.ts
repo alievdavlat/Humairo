@@ -7,12 +7,19 @@ const env = getEnv();
 
 export const streamController = {
   createStreamToken: async (req: Request, res: Response) => {
-    const {userId} = getAuth(req);
-    if(!userId) throw new UnauthorizedError("User not authenticated");
-    const localUser  = await getLocalUser(userId);
-    if(!localUser) throw new ServiceUnavailableError("Account not synced yet");
+    const { userId } = getAuth(req);
+    if (!userId) throw new UnauthorizedError("User not authenticated");
+    const localUser = await getLocalUser(userId);
+    if (!localUser) throw new ServiceUnavailableError("Account not synced yet");
 
-    const { token , sid } = await streamService.getStreamToken(userId, localUser, env)
-    res.status(200).json({ token, apikey:env.STREAM_API_KEY, userId:sid })
+    const { token, sid } = await streamService.getStreamToken(
+      userId,
+      localUser,
+      env,
+    );
+
+    res
+      .status(200)
+      .json({ token, apikey: env.STREAM_API_KEY, userId: sid, success: true });
   },
 };
