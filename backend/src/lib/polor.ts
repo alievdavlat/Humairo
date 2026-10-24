@@ -5,7 +5,7 @@ import { BadGatewayError, BadRequestError, InternalServerError } from "./error-r
 export async function polarCreateCheckout(env:Env, body:checkoutCreateBody) {
   const token = env.POLOR_ACCESS_TOKEN;
   if(!token) throw new BadRequestError("polar access token is not configured");
-  const res = await fetch(`${env.POLOR_API_BASE}/v1/checkout`, {
+  const res = await fetch(`${env.POLOR_API_BASE}/v1/checkouts/`, {
     method:"POST",
     headers:{
       Authorization:`Bearer ${token}`,

@@ -12,9 +12,9 @@ CMD ["/bin/bash", "run.sh"]
 # ===== Prod Mode =====
 FROM node:22-slim AS prod
 WORKDIR /app
-ENV NODE_ENV=production
 ADD . /app
 RUN npm install && npm run build
+ENV NODE_ENV=production
 CMD ["npm", "run", "start"]
 
 # Pick the container from the selected run mode

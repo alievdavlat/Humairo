@@ -1,0 +1,19 @@
+# Dev-only additions (RUN_MODE=dev), merged onto docker-compose.yml
+# automatically by `docker compose up`.
+# Bind-mounts the source for hot reload; the anonymous /app/node_modules
+# volume keeps the image's node_modules from being shadowed by the host.
+services:
+  frontend:
+    environment:
+      # File watching over a bind mount on Windows needs polling
+      - CHOKIDAR_USEPOLLING=true
+    volumes:
+      - /app/node_modules
+      - ./frontend:/app
+
+  backend:
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    volumes:
+      - /app/node_modules
+      - ./backend:/app

@@ -3,3 +3,5 @@ dist
 .git
 *.log
 npm-debug.log*
+.env
+.env.*

@@ -53,7 +53,7 @@ createCheckout: async (userId: string, parsedData: Cart, env: Env): Promise<chec
       })
       .returning();
 
-    const success_url = `${env.FRONTEND_URL}/checkout/return?checkout_id={checkoud_id}`;
+    const success_url = `${env.FRONTEND_URL}/checkout/return?checkout_id={CHECKOUT_ID}`;
     const return_url = `${env.FRONTEND_URL}/cart`;
 
     const checkout = await polarCreateCheckout(env, {

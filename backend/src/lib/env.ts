@@ -1,5 +1,10 @@
 import { z } from "zod";
 
+const baseUrl = z
+  .string()
+  .url()
+  .transform((s) => s.replace(/\/+$/, ""));
+
 const envSchema = z.object({
   NODE_ENV: z
     .enum(["development", "production", "test"])
@@ -16,11 +21,11 @@ const envSchema = z.object({
   JWT_ACCESS_EXPIRES_IN: z.string().default("15m"),
   JWT_REFRESH_EXPIRES_IN: z.string().default("7d"),
 
-  FRONTEND_URL: z.string().url().default("http://localhost:5173"),
+  FRONTEND_URL: baseUrl.default("http://localhost:5173"),
 
   POLOR_ACCESS_TOKEN: z.string().optional(),
   POLOR_WEBHOOK_SECRET: z.string().optional(),
-  POLOR_API_BASE: z.string().url().default("https://api.polor.ai/v1"),
+  POLOR_API_BASE: baseUrl.default("https://sandbox-api.polar.sh"),
   POLOR_CHECKOUT_PRODUCT_ID: z.string().uuid(),
 
   STREAM_API_KEY: z.string().min(1),
@@ -34,7 +39,12 @@ const envSchema = z.object({
 
 export type Env = z.infer<typeof envSchema>;
 export function loadEnv(): Env {
-  const result = envSchema.safeParse(process.env);
+  // docker-compose passes unset vars as "" (`${VAR:-}`); treat them as missing
+  // so .optional() / .default() apply instead of failing validation.
+  const raw = Object.fromEntries(
+    Object.entries(process.env).filter(([, v]) => v !== ""),
+  );
+  const result = envSchema.safeParse(raw);
   if (!result.success) {
     console.error("Invalid environment variables:", result.error.flatten().fieldErrors);
     throw new Error(`Invalid environment variables`);

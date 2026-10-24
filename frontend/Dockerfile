@@ -14,6 +14,10 @@ ENTRYPOINT ["/bin/bash", "/app/scripts/startup-dev.sh"]
 
 # ===== Prod Mode =====
 FROM node:22-slim AS prod
+# `vite build` bakes VITE_* into the bundle, so they must exist at build time
+# (passed as build args from docker-compose.yml).
+ARG VITE_API_URL
+ARG VITE_CLERK_PUBLISHABLE_KEY
 WORKDIR /app
 ADD . /app
 RUN npm install && npm run build
