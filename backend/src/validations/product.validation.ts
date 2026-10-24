@@ -17,4 +17,6 @@ export const productSchema = z.object({
   active: z.boolean().default(true),
 });
 
+export type productSchemaType = z.infer<typeof productSchema>;
+
 export const productUpdateSchema = productSchema.partial();

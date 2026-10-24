@@ -4,6 +4,7 @@ import productsRouter from "./products.routes";
 import streamRouter from "./stream.routes";
 import checkoutRouter from "./checkout.routes";
 import adminRouter from "./admin.routes";
+import orderRouter from "./order.routes";
 
 interface RouteItem {
   path: string;
@@ -30,5 +31,9 @@ export const routesData: RouteItem[] = [
   {
     path: "/admin",
     handler: adminRouter,
+  },
+  {
+    path: "/orders",
+    handler: orderRouter,
   },
 ];

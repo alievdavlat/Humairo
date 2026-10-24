@@ -1,20 +1,15 @@
 import type { Request, Response } from "express";
-import { count, desc, eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import ImageKit from "@imagekit/nodejs";
-import {
-  BadGatewayError,
-  BadRequestError,
-  ConflictError,
-  getEnv,
-} from "../lib";
+import { BadRequestError, getEnv } from "../lib";
 import { db } from "../db";
-import { orderItems, products } from "../db/schema";
+import { products } from "../db/schema";
 import {
   productSchema,
   productUpdateSchema,
 } from "../validations/product.validation";
 import { buildProductUpdateQuery } from "../lib/products";
-import { deleteImageKitAsset } from "../lib/imageKit";
+import { adminService } from "../services/admin.service";
 const env = getEnv();
 
 export const adminController = {
@@ -42,16 +37,8 @@ export const adminController = {
         details: parsed.error.format(),
       });
     }
-    const { imageUrl, imageKitFileId, ...rest } = parsed.data;
-    const [row] = await db
-      .insert(products)
-      .values({
-        ...rest,
-        imageUrl: imageUrl || null,
-        imageKitFileId: imageKitFileId || null,
-      })
-      .returning();
 
+    const row = await adminService.createProduct(parsed.data);
     res.status(201).json({ success: true, product: row });
   },
   updateProduct: async (req: Request<{ id: string }>, res: Response) => {
@@ -65,18 +52,7 @@ export const adminController = {
     const { id } = req.params;
     const data = buildProductUpdateQuery(parsed.data);
 
-    if (!Object.keys(data).length) {
-      throw new BadGatewayError("No fields to update");
-    }
-
-    const [row] = await db
-      .update(products)
-      .set(data)
-      .where(eq(products.id, id))
-      .returning();
-
-    if (!row) throw new BadRequestError("Product not found");
-
+    const row = await adminService.updateProduct(id, data);
     res.status(200).json({ success: true, product: row });
   },
   deleteProduct: async (req: Request<{ id: string }>, res: Response) => {
@@ -90,23 +66,7 @@ export const adminController = {
       throw new BadRequestError("Product not found");
     }
 
-    const [countRow] = await db
-      .select({ c: count() })
-      .from(orderItems)
-      .where(eq(orderItems.productId, id));
-
-    if (Number(countRow.c ?? 0) > 0) {
-      throw new ConflictError(
-        "This product is on one or more orders and cannot be deleted",
-      );
-    }
-
-    await deleteImageKitAsset(env, existingProduct.imageKitFileId);
-    const [row] = await db
-      .delete(products)
-      .where(eq(products.id, id))
-      .returning();
-
+    const row = await adminService.deleteProduct(id, existingProduct);
     res.status(200).json({ success: true, product: row });
   },
 };
