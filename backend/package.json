@@ -9,7 +9,7 @@
     "migration:generate": "drizzle-kit generate",
     "migration:push": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
-    "db:seed": "tsx scripts/seed.ts",
+    "db:seed": "tsx src/scripts/seed.ts",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },

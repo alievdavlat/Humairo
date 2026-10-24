@@ -9,7 +9,7 @@ import {
 } from "../lib";
 import { productSchemaType } from "../validations/product.validation";
 import { deleteImageKitAsset } from "../lib/imageKit";
-import { prdoductTupe } from "../@types/prdoucts.type";
+import { prdoductTupe } from "../@types/prdoucts.types";
 const env = getEnv();
 
 export const adminService = {

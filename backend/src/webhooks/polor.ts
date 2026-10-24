@@ -17,9 +17,9 @@ async function alreadyPaid(polarOrderId?: string, checkoutId?: string) {
     const [raw] = await db
       .select()
       .from(orders)
-      .where(eq(orders.id, polarOrderId))
+      .where(eq(orders.polarOrderId, polarOrderId))
       .limit(1);
-    if (raw.status === "paid") return true;
+    if (raw?.status === "paid") return true;
   }
 
   if (checkoutId) {
@@ -28,7 +28,7 @@ async function alreadyPaid(polarOrderId?: string, checkoutId?: string) {
       .from(orders)
       .where(eq(orders.polarCheckoutId, checkoutId))
       .limit(1);
-    if (raw.status === "paid") return true;
+    if (raw?.status === "paid") return true;
   }
   return false;
 }
@@ -111,8 +111,9 @@ export async function polorWebhookHandler(req: Request, res: Response) {
     data: Record<string, unknown>;
   };
 
-  if (event.type !== "order.paid" && !event.data) {
-    console.log("order.paid action skipped");
+  // Only a paid order creates an order; acknowledge every other event so Polar does not retry it.
+  if (event.type !== "order.paid" || !event.data) {
+    res.status(200).json({ ok: true, skipped: event.type });
     return;
   }
 
