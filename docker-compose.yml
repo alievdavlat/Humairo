@@ -18,6 +18,7 @@ services:
     environment:
       - VITE_API_URL=${VITE_API_URL:-http://localhost:${BACKEND_PORT:-3001}}
       - VITE_CLERK_PUBLISHABLE_KEY=${VITE_CLERK_PUBLISHABLE_KEY:-}
+      - VITE_SENTRY_DSN=${VITE_SENTRY_DSN:-}
     ports:
       - ${FRONTEND_PORT:-5173}:5173
     tty: true

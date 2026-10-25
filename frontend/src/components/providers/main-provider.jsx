@@ -1,10 +1,15 @@
-import React from "react";
 import ClerkClientProvider from "./clerk-provider";
+import ClientQueryProvider from "./query-provider";
+import { SentryUserSync } from "../sentry-user-sync";
+
 const MainProvider = ({ children }) => {
   return (
-    <ClerkClientProvider>
-      {children}
-    </ClerkClientProvider>
+    <ClientQueryProvider>
+      <ClerkClientProvider>
+        <SentryUserSync />
+        {children}
+      </ClerkClientProvider>
+    </ClientQueryProvider>
   );
 };
 
