@@ -20,6 +20,12 @@ export const getUserId = (req: Request): string => {
   return userId;
 };
 
+export const requireLocalUser = async (req: Request) => {
+  const localUser = await getLocalUser(getUserId(req));
+  if (!localUser) throw new UnauthorizedError("Account not synced yet");
+  return localUser;
+};
+
 export const requireAdmin = async (
   req: Request,
   _: Response,

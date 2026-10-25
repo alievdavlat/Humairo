@@ -1,7 +1,7 @@
-
+import type { Request, Response } from "express";
 
 export const auth  = {
-  login: async (req, res) => {
+  login: async (req: Request, res: Response) => {
     const body  = req.body;
 
     if(!body.username) {

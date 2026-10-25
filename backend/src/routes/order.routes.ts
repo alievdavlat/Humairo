@@ -11,5 +11,9 @@ orderRouter.post(
   isAuthenticated,
   ordersController.createStreamChannel,
 );
-orderRouter.post("/:id/video-invite", ordersController.createVideoInvite);
+orderRouter.post(
+  "/:id/video-invite",
+  isAuthenticated,
+  ordersController.createVideoInvite,
+);
 export default orderRouter;

@@ -111,7 +111,6 @@ export async function polorWebhookHandler(req: Request, res: Response) {
     data: Record<string, unknown>;
   };
 
-  // Only a paid order creates an order; acknowledge every other event so Polar does not retry it.
   if (event.type !== "order.paid" || !event.data) {
     res.status(200).json({ ok: true, skipped: event.type });
     return;
@@ -127,7 +126,8 @@ export async function polorWebhookHandler(req: Request, res: Response) {
 
   const sessionId = checkoutSessionIdFromMetaData(data);
   if (!sessionId) {
-    throw new ServiceUnavailableError("session temprory unavailable!");
+    console.warn(`Polar order ${polarOrderId ?? "?"} has no checkout_session_id; skipped`);
+    res.status(200).json({ ok: true, skipped: "no checkout_session_id" });
     return;
   };
   const ok = await fulfillCheckoutSession( sessionId, polarOrderId, checkoutId );
